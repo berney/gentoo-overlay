@@ -1,0 +1,17 @@
+<!-- * GITHUB TEMPLATE from https://api.gentoo.org/overlays/repositories.xml !-->
+<?xml version="1.0" ?>
+<repositories version="1.0">
+  <repo quality="experimental" status="unofficial">
+    <name>berne</name>
+    <description lang="en">Berne's Custom ebuilds</description>
+    <homepage>https://github.com/berney/gentoo-overlay.git</homepage>
+    <owner type="person">
+      <email>berne.campbell@gmail.com</email>
+      <name>Berne Campbell</name>
+    </owner>
+    <source type="git">https://github.com/berney/gentoo-overlay.git</source>
+    <source type="git">git://github.com/berney/gentoo-overlay.git</source>
+    <source type="git">git@github.com:berney/gentoo-overlay.git</source>
+    <feed>https://github.com/berney/gentoo-overlay/commits/master.atom</feed>
+  </repo>
+</repositories>
