@@ -12,7 +12,7 @@ Berne's Custom ebuilds
 
 You can setup this overlay by running this one-liner:
 
-    curl -sL https://raw.githubusercontent.com/berney/gentoo-overlay/master/berne.conf | sudo tee -a /etc/portage/repos.conf.d/berne.conf
+    curl -sL https://raw.githubusercontent.com/berney/gentoo-overlay/master/berne.conf | sudo tee -a /etc/portage/repos.conf/berne.conf
     
 
 ### Using layman
