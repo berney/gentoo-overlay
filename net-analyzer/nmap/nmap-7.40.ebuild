@@ -20,7 +20,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="alpha amd64 arm ~arm64 hppa ia64 ~mips ppc ppc64 ~s390 ~sh sparc x86 ~x86-fbsd ~amd64-linux ~arm-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris ~x86-solaris"
 
-IUSE="ipv6 libressl +nse system-lua ncat ndiff nls nmap-update nping ssl zenmap"
+IUSE="ipv6 libressl +nse system-lua ncat ndiff nls nmap-update nping ssl zenmap static"
 NMAP_LINGUAS=( de fr hi hr it ja pl pt_BR ru zh )
 IUSE+=" ${NMAP_LINGUAS[@]/#/linguas_}"
 
@@ -32,8 +32,14 @@ REQUIRED_USE="
 
 RDEPEND="
 	dev-libs/liblinear:=
-	dev-libs/libpcre
-	net-libs/libpcap
+	static? (
+		dev-libs/libpcre[static-libs(+)]
+		net-libs/libpcap[static-libs(+)]
+	)
+	!static? (
+		dev-libs/libpcre
+		net-libs/libpcap
+	)
 	zenmap? (
 		dev-python/pygtk:2[${PYTHON_USEDEP}]
 		${PYTHON_DEPS}
@@ -123,6 +129,14 @@ src_prepare() {
 }
 
 src_configure() {
+	# static
+	use static && append-cflags -static -static-libgcc
+	use static && append-cxxflags -static -static-libstdc++ -static-libgcc
+	use static && append-ldflags -Wl,-static -Wl,--eh-frame-hdr -fuse-ld=gold -static
+    elog "CFLAGS=$CFLAGS"
+	elog "CXXFLAGS=$CXXFLAGS"
+	elog "LDFLAGS=$LDFLAGS"
+
 	# The bundled libdnet is incompatible with the version available in the
 	# tree, so we cannot use the system library here.
 	econf \
