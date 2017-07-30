@@ -49,8 +49,14 @@ RDEPEND="
 	nls? ( virtual/libintl )
 	nmap-update? ( dev-libs/apr dev-vcs/subversion )
 	ssl? (
-		!libressl? ( dev-libs/openssl:0= )
-		libressl? ( dev-libs/libressl:= )
+		!libressl? (
+			static? ( dev-libs/openssl:0=[static-libs(+)] )
+			!static? ( dev-libs/openssl:0= )
+		)
+		libressl? (
+			static? ( dev-libs/libressl:=[static-libs(+)] )
+			!static? ( dev-libs/libressl:= )
+		)
 	)
 "
 DEPEND="
