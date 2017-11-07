@@ -38,6 +38,7 @@ RDEPEND="
 	static? (
 		dev-libs/libpcre[static-libs(+)]
 		net-libs/libpcap[static-libs(+)]
+		sys-libs/zlib[static-libs(+)]
 	)
 	!static? (
 		dev-libs/libpcre
