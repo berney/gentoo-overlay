@@ -139,7 +139,7 @@ src_configure() {
 	use static && append-cflags -static -static-libgcc
 	use static && append-cxxflags -static -static-libstdc++ -static-libgcc
 	use static && append-ldflags -Wl,-static -Wl,--eh-frame-hdr -fuse-ld=gold -static
-    elog "CFLAGS=$CFLAGS"
+	elog "CFLAGS=$CFLAGS"
 	elog "CXXFLAGS=$CXXFLAGS"
 	elog "LDFLAGS=$LDFLAGS"
 

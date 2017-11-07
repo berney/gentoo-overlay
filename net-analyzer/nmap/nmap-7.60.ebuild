@@ -22,7 +22,7 @@ KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~spa
 
 IUSE="
 	ipv6 libressl libssh2 ncat ndiff nls nmap-update nping +nse ssl system-lua
-	zenmap
+	zenmap static
 "
 NMAP_LINGUAS=( de fr hi hr it ja pl pt_BR ru zh )
 IUSE+=" ${NMAP_LINGUAS[@]/#/linguas_}"
@@ -35,8 +35,14 @@ REQUIRED_USE="
 
 RDEPEND="
 	dev-libs/liblinear:=
-	dev-libs/libpcre
-	net-libs/libpcap
+	static? (
+		dev-libs/libpcre[static-libs(+)]
+		net-libs/libpcap[static-libs(+)]
+	)
+	!static? (
+		dev-libs/libpcre
+		net-libs/libpcap
+	)
 	libssh2? ( net-libs/libssh2[zlib] )
 	ndiff? ( ${PYTHON_DEPS} )
 	nls? ( virtual/libintl )
@@ -45,8 +51,14 @@ RDEPEND="
 		dev-vcs/subversion
 	)
 	ssl? (
-		!libressl? ( dev-libs/openssl:0= )
-		libressl? ( dev-libs/libressl:= )
+		!libressl? (
+			static? ( dev-libs/openssl:0=[static-libs(+)] )
+			!static? ( dev-libs/openssl:0= )
+		)
+		libressl? (
+			static? ( dev-libs/libressl:=[static-libs(+)] )
+			!static? ( dev-libs/libressl:= )
+		)
 	)
 	system-lua? ( >=dev-lang/lua-5.2:*[deprecated] )
 	zenmap? (
@@ -135,6 +147,14 @@ src_prepare() {
 }
 
 src_configure() {
+	# static
+	use static && append-cflags -static -static-libgcc
+	use static && append-cxxflags -static -static-libstdc++ -static-libgcc
+	use static && append-ldflags -Wl,-static -Wl,--eh-frame-hdr -fuse-ld=gold -static
+	elog "CFLAGS=$CFLAGS"
+	elog "CXXFLAGS=$CXXFLAGS"
+	elog "LDFLAGS=$LDFLAGS"
+
 	# The bundled libdnet is incompatible with the version available in the
 	# tree, so we cannot use the system library here.
 	econf \
