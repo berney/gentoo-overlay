@@ -43,7 +43,15 @@ RDEPEND="
 		dev-libs/libpcre
 		net-libs/libpcap
 	)
-	libssh2? ( net-libs/libssh2[zlib] )
+	libssh2? (
+		static? (
+			net-libs/libssh2[zlib]
+			net-libs/libssh2[static-libs(+)]
+		)
+		!static? (
+			net-libs/libssh2[zlib]
+		)
+	)
 	ndiff? ( ${PYTHON_DEPS} )
 	nls? ( virtual/libintl )
 	nmap-update? (
