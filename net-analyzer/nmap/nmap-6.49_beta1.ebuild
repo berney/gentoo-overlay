@@ -36,11 +36,10 @@ RDEPEND="
 	static? (
 		dev-libs/libpcre[static-libs(+)]
 		net-libs/libpcap[static-libs(+)]
-	    net-libs/libpcap[ipv6?]
 	)
 	!static? (
 		dev-libs/libpcre
-	    net-libs/libpcap[ipv6?]
+		net-libs/libpcap
 	)
 	zenmap? (
 		dev-python/pygtk:2[${PYTHON_USEDEP}]
