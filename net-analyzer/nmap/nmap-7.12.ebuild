@@ -121,6 +121,14 @@ src_prepare() {
 }
 
 src_configure() {
+	# static
+	use static && append-cflags -static -static-libgcc
+	use static && append-cxxflags -static -static-libstdc++ -static-libgcc
+	use static && append-ldflags -Wl,-static -Wl,--eh-frame-hdr -fuse-ld=gold -static
+	elog "CFLAGS=$CFLAGS"
+	elog "CXXFLAGS=$CXXFLAGS"
+	elog "LDFLAGS=$LDFLAGS"
+
 	# The bundled libdnet is incompatible with the version available in the
 	# tree, so we cannot use the system library here.
 	econf \
