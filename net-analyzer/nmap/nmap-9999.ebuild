@@ -20,7 +20,7 @@ REQUIRED_USE="system-lua? ( nse )"
 RDEPEND="
 	dev-libs/liblinear:=
 	static? (
-		deb-libs/libprce[static-libs(+)]
+		dev-libs/libpcre[static-libs(+)]
 		net-libs/libpcap[static-libs(+)]
 		sys-libs/zlib[static-libs(+)]
 		libssh2? (
