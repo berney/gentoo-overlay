@@ -1,13 +1,10 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
-
-PYTHON_COMPAT=( python2_7 )
-PYTHON_REQ_USE="sqlite,xml"
-inherit autotools flag-o-matic git-r3 python-single-r1 toolchain-funcs user
+EAPI=7
 
 MY_P=${P/_beta/BETA}
+inherit autotools desktop flag-o-matic git-r3 toolchain-funcs user
 
 DESCRIPTION="A utility for network discovery and security auditing"
 HOMEPAGE="https://nmap.org/"
@@ -17,66 +14,51 @@ SRC_URI="https://dev.gentoo.org/~jer/nmap-logo-64.png"
 
 LICENSE="GPL-2"
 SLOT="0"
-
-IUSE="
-	ipv6 libressl libssh2 ncat ndiff nls nmap-update nping +nse ssl system-lua
-	zenmap static
-"
-NMAP_LINGUAS=( de fr hi hr it ja pl pt_BR ru zh )
-IUSE+=" ${NMAP_LINGUAS[@]/#/linguas_}"
-
-REQUIRED_USE="
-	system-lua? ( nse )
-	ndiff? ( ${PYTHON_REQUIRED_USE} )
-	zenmap? ( ${PYTHON_REQUIRED_USE} )
-"
+IUSE="ipv6 libressl libssh2 ncat nmap-update nping +nse ssl system-lua static"
+REQUIRED_USE="system-lua? ( nse )"
 
 RDEPEND="
 	dev-libs/liblinear:=
 	static? (
-		dev-libs/libpcre[static-libs(+)]
+		deb-libs/libprce[static-libs(+)]
 		net-libs/libpcap[static-libs(+)]
 		sys-libs/zlib[static-libs(+)]
+		libssh2? (
+			net-libs/libssh2[zlib]
+			net-libs/libssh2[static-libs(+)]
+		)
+		nmap-update? (
+			dev-libs/apr[static-libs(+)]
+			dev-vcs/subversion
+		)
+		nse? ( sys-libs/zlib[static-libs(+)] )
+		ssl? (
+			!libressl? ( dev-libs/openssl:0=[static-libs(+)] )
+			libressl? ( dev-libs/libressl:=[static-libs(+)] )
+		)
+		system-lua? ( >=dev-lang/lua-5.2:*[deprecated] )
 	)
 	!static? (
 		dev-libs/libpcre
 		net-libs/libpcap
-	)
-	libssh2? (
-		static? (
+		libssh2? (
 			net-libs/libssh2[zlib]
-			net-libs/libssh2[static-libs(+)]
+			sys-libs/zlib
 		)
-		!static? (
-			net-libs/libssh2[zlib]
+		nmap-update? (
+			dev-libs/apr
+			dev-vcs/subversion
 		)
-	)
-	ndiff? ( ${PYTHON_DEPS} )
-	nls? ( virtual/libintl )
-	nmap-update? (
-		dev-libs/apr
-		dev-vcs/subversion
-	)
-	ssl? (
-		!libressl? (
-			static? ( dev-libs/openssl:0=[static-libs(+)] )
-			!static? ( dev-libs/openssl:0= )
+		nse? ( sys-libs/zlib )
+		ssl? (
+			!libressl? ( dev-libs/openssl:0= )
+			libressl? ( dev-libs/libressl:= )
 		)
-		libressl? (
-			static? ( dev-libs/libressl:=[static-libs(+)] )
-			!static? ( dev-libs/libressl:= )
-		)
-	)
-	system-lua? ( >=dev-lang/lua-5.2:*[deprecated] )
-	zenmap? (
-		dev-python/pygtk:2[${PYTHON_SINGLE_USEDEP}]
-		${PYTHON_DEPS}
+		system-lua? ( >=dev-lang/lua-5.2:*[deprecated] )
 	)
 "
-DEPEND="
-	${RDEPEND}
-	nls? ( sys-devel/gettext )
-"
+DEPEND="${RDEPEND}"
+
 PATCHES=(
 	"${FILESDIR}"/${PN}-5.10_beta1-string.patch
 	"${FILESDIR}"/${PN}-5.21-python.patch
@@ -86,37 +68,17 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-7.25-CXXFLAGS.patch
 	"${FILESDIR}"/${PN}-7.25-libpcre.patch
 	"${FILESDIR}"/${PN}-7.31-libnl.patch
+	"${FILESDIR}"/${PN}-7.80-ac-config-subdirs.patch
+	"${FILESDIR}"/${PN}-9999-netutil-else.patch
 )
 S="${WORKDIR}/${MY_P}"
 
-pkg_setup() {
-	if use ndiff || use zenmap; then
-		python-single-r1_pkg_setup
-	fi
-}
-
 src_prepare() {
-	rm -r libpcap/ || die
+	rm -r liblinear/ libpcap/ libpcre/ libssh2/ libz/ || die
 
 	cat "${FILESDIR}"/nls.m4 >> "${S}"/acinclude.m4 || die
 
 	default
-
-	if use nls; then
-		local lingua=''
-		for lingua in ${NMAP_LINGUAS[@]}; do
-			if ! use linguas_${lingua}; then
-				rm -r zenmap/share/zenmap/locale/${lingua} || die
-				rm zenmap/share/zenmap/locale/${lingua}.po || die
-			fi
-		done
-	else
-		# configure/make ignores --disable-nls
-		for lingua in ${NMAP_LINGUAS[@]}; do
-			rm -r zenmap/share/zenmap/locale/${lingua} || die
-			rm zenmap/share/zenmap/locale/${lingua}.po || die
-		done
-	fi
 
 	sed -i \
 		-e '/^ALL_LINGUAS =/{s|$| id|g;s|jp|ja|g}' \
@@ -126,11 +88,6 @@ src_prepare() {
 		-e 's|^Categories=.*|Categories=Network;System;Security;|g' \
 		zenmap/install_scripts/unix/zenmap-root.desktop \
 		zenmap/install_scripts/unix/zenmap.desktop || die
-
-	sed -i \
-		-e '/AC_CONFIG_SUBDIRS(libz)/d' \
-		-e '/AC_CONFIG_SUBDIRS(libssh2)/d' \
-		configure.ac
 
 	cp libdnet-stripped/include/config.h.in{,.nmap-orig} || die
 
@@ -155,15 +112,15 @@ src_configure() {
 	# tree, so we cannot use the system library here.
 	econf \
 		$(use_enable ipv6) \
-		$(use_enable nls) \
 		$(use_with libssh2) \
 		$(use_with ncat) \
-		$(use_with ndiff) \
+		--without-ndiff \
 		$(use_with nmap-update) \
 		$(use_with nping) \
 		$(use_with ssl openssl) \
-		$(use_with zenmap) \
+		--without-zenmap \
 		$(usex libssh2 --with-zlib) \
+		$(usex nse --with-zlib) \
 		$(usex nse --with-liblua=$(usex system-lua /usr included '' '') --without-liblua) \
 		--cache-file="${S}"/config.cache \
 		--with-libdnet=included \
@@ -203,9 +160,4 @@ src_install() {
 	fi
 
 	dodoc CHANGELOG HACKING docs/README docs/*.txt
-
-	if use zenmap; then
-		doicon "${DISTDIR}/nmap-logo-64.png"
-		python_optimize
-	fi
 }
