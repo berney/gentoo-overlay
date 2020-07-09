@@ -70,6 +70,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-7.31-libnl.patch
 	"${FILESDIR}"/${PN}-7.80-ac-config-subdirs.patch
 	"${FILESDIR}"/${PN}-9999-netutil-else.patch
+	"${FILESDIR}"/${PN}-9999-liblinear.patch
 )
 S="${WORKDIR}/${MY_P}"
 

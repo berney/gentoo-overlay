@@ -1,0 +1,12 @@
+diff --git a/configure.ac b/configure.ac
+index 89c62f75f..021178fe5 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -902,6 +902,7 @@ AC_HELP_STRING([--with-liblinear=included], [Use the liblinear version included
+   *)
+     CPPFLAGS="-I$with_liblinear/include $CPPFLAGS"
+     LDFLAGS="-L$with_liblinear/lib $LDFLAGS"
++    LIBLINEAR_LIBS="-llinear"
+     have_liblinear=yes
+   ;;
+   esac]
