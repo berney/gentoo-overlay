@@ -4,58 +4,39 @@
 EAPI=7
 
 MY_P=${P/_beta/BETA}
-inherit autotools desktop flag-o-matic git-r3 toolchain-funcs user
+inherit autotools desktop flag-o-matic toolchain-funcs user
 
 DESCRIPTION="A utility for network discovery and security auditing"
 HOMEPAGE="https://nmap.org/"
-
-EGIT_REPO_URI="https://github.com/nmap/nmap"
-SRC_URI="https://dev.gentoo.org/~jer/nmap-logo-64.png"
+SRC_URI="
+	https://nmap.org/dist/${MY_P}.tar.bz2
+	https://dev.gentoo.org/~jer/nmap-logo-64.png
+"
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="ipv6 libressl libssh2 ncat nmap-update nping +nse ssl system-lua static"
+KEYWORDS="~alpha amd64 arm ~arm64 hppa ~ia64 ~mips ppc ppc64 ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos"
+IUSE="ipv6 libressl libssh2 ncat nmap-update nping +nse ssl system-lua"
 REQUIRED_USE="system-lua? ( nse )"
 
 RDEPEND="
 	dev-libs/liblinear:=
-	static? (
-		dev-libs/libpcre[static-libs(+)]
-		net-libs/libpcap[static-libs(+)]
-		sys-libs/zlib[static-libs(+)]
-		libssh2? (
-			net-libs/libssh2[zlib]
-			net-libs/libssh2[static-libs(+)]
-		)
-		nmap-update? (
-			dev-libs/apr[static-libs(+)]
-			dev-vcs/subversion
-		)
-		nse? ( sys-libs/zlib[static-libs(+)] )
-		ssl? (
-			!libressl? ( dev-libs/openssl:0=[static-libs(+)] )
-			libressl? ( dev-libs/libressl:=[static-libs(+)] )
-		)
-		system-lua? ( >=dev-lang/lua-5.2:*[deprecated] )
+	dev-libs/libpcre
+	net-libs/libpcap
+	libssh2? (
+		net-libs/libssh2[zlib]
+		sys-libs/zlib
 	)
-	!static? (
-		dev-libs/libpcre
-		net-libs/libpcap
-		libssh2? (
-			net-libs/libssh2[zlib]
-			sys-libs/zlib
-		)
-		nmap-update? (
-			dev-libs/apr
-			dev-vcs/subversion
-		)
-		nse? ( sys-libs/zlib )
-		ssl? (
-			!libressl? ( dev-libs/openssl:0= )
-			libressl? ( dev-libs/libressl:= )
-		)
-		system-lua? ( >=dev-lang/lua-5.2:*[deprecated] )
+	nmap-update? (
+		dev-libs/apr
+		dev-vcs/subversion
 	)
+	nse? ( sys-libs/zlib )
+	ssl? (
+		!libressl? ( dev-libs/openssl:0= )
+		libressl? ( dev-libs/libressl:= )
+	)
+	system-lua? ( >=dev-lang/lua-5.2:*[deprecated] )
 "
 DEPEND="${RDEPEND}"
 
@@ -69,7 +50,6 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-7.25-libpcre.patch
 	"${FILESDIR}"/${PN}-7.31-libnl.patch
 	"${FILESDIR}"/${PN}-7.80-ac-config-subdirs.patch
-	"${FILESDIR}"/${PN}-9999-netutil-else.patch
 )
 S="${WORKDIR}/${MY_P}"
 
@@ -100,14 +80,6 @@ src_prepare() {
 }
 
 src_configure() {
-	# static
-	use static && append-cflags -static -static-libgcc
-	use static && append-cxxflags -static -static-libstdc++ -static-libgcc
-	use static && append-ldflags -Wl,-static -Wl,--eh-frame-hdr -fuse-ld=gold -static
-	elog "CFLAGS=$CFLAGS"
-	elog "CXXFLAGS=$CXXFLAGS"
-	elog "LDFLAGS=$LDFLAGS"
-
 	# The bundled libdnet is incompatible with the version available in the
 	# tree, so we cannot use the system library here.
 	econf \
@@ -124,9 +96,9 @@ src_configure() {
 		$(usex nse --with-liblua=$(usex system-lua /usr included '' '') --without-liblua) \
 		--cache-file="${S}"/config.cache \
 		--with-libdnet=included \
-		--with-liblinear=/usr \
 		--with-pcre=/usr
 	#	Commented out because configure does weird things
+	#	--with-liblinear=/usr \
 }
 
 src_compile() {
