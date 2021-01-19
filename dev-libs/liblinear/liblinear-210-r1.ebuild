@@ -46,7 +46,7 @@ src_compile() {
 }
 
 src_install() {
-	dolib.a ${PN}.a
+	use static-libs && dolib.a ${PN}.a
 	dolib.so ${PN}.so.3
 	dosym ${PN}.so.3 /usr/$(get_libdir)/${PN}.so
 

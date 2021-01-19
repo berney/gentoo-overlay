@@ -11,13 +11,15 @@ index 1990d89..74673fb 100644
  	if [ "$(OS)" = "Darwin" ]; then \
  		SHARED_LIB_FLAG="-dynamiclib -Wl,-install_name,liblinear.so.$(SHVER)"; \
  	else \
-@@ -30,6 +30,9 @@ linear.o: linear.cpp linear.h
+@@ -30,7 +30,10 @@ linear.o: linear.cpp linear.h
  blas/blas.a: blas/*.c blas/*.h
- 	$(MAKE) -C blas OPTFLAGS='$(CFLAGS)' CC='$(CC)';
+ 	make -C blas OPTFLAGS='$(CFLAGS)' CC='$(CC)';
 
 +liblinear.a: linear.o tron.o
 +	ar -rcvs liblinear.a linear.o tron.o blas/*.o
 +
  clean:
- 	$(MAKE) -C blas clean
- 	$(MAKE) -C matlab clean
+ 	make -C blas clean
+ 	make -C matlab clean
+-	rm -f *~ tron.o linear.o train predict liblinear.so.$(SHVER)
++	rm -f *~ tron.o linear.o train predict liblinear.a liblinear.so.$(SHVER)

@@ -9,12 +9,12 @@ HOMEPAGE="https://www.csie.ntu.edu.tw/~cjlin/liblinear/ https://github.com/cjlin
 SRC_URI="https://github.com/cjlin1/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
-SLOT="0/3"
+SLOT="0/4"
 IUSE="static-libs"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86 ~x64-macos"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~s390 sparc x86 ~x64-macos"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-210-r1-static.patch
+	"${FILESDIR}"/${PN}-240-r1-static.patch
 )
 
 src_prepare() {
@@ -46,8 +46,8 @@ src_compile() {
 
 src_install() {
 	use static-libs && dolib.a ${PN}.a
-	dolib.so ${PN}.so.3
-	dosym ${PN}.so.3 /usr/$(get_libdir)/${PN}.so
+	dolib.so ${PN}.so.4
+	dosym ${PN}.so.4 /usr/$(get_libdir)/${PN}.so
 
 	newbin predict ${PN}-predict
 	newbin train ${PN}-train
