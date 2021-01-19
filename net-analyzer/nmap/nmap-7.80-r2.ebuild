@@ -2,7 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools desktop flag-o-matic toolchain-funcs
+
+LUA_COMPAT=( lua5-3 )
+LUA_REQ_USE="deprecated"
+
+inherit autotools desktop flag-o-matic lua-single toolchain-funcs
 
 DESCRIPTION="Network exploration tool and security / port scanner"
 HOMEPAGE="https://nmap.org/"
@@ -10,9 +14,9 @@ SRC_URI="https://nmap.org/dist/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos"
-IUSE="ipv6 libressl libssh2 ncat nmap-update nping +nse ssl system-lua"
-REQUIRED_USE="system-lua? ( nse )"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos"
+IUSE="ipv6 libressl libssh2 ncat nmap-update nping +nse ssl +system-lua"
+REQUIRED_USE="system-lua? ( nse ${LUA_REQUIRED_USE} )"
 
 RDEPEND="
 	dev-libs/liblinear:=
@@ -31,7 +35,7 @@ RDEPEND="
 		!libressl? ( dev-libs/openssl:0= )
 		libressl? ( dev-libs/libressl:= )
 	)
-	system-lua? ( >=dev-lang/lua-5.2:*[deprecated] )
+	system-lua? ( ${LUA_DEPS} )
 "
 DEPEND="${RDEPEND}"
 
@@ -46,6 +50,10 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-7.31-libnl.patch
 	"${FILESDIR}"/${PN}-7.80-ac-config-subdirs.patch
 )
+
+pkg_setup() {
+	use system-lua && lua-single_pkg_setup
+}
 
 src_prepare() {
 	rm -r liblinear/ libpcap/ libpcre/ libssh2/ libz/ || die
@@ -87,7 +95,7 @@ src_configure() {
 		--without-zenmap \
 		$(usex libssh2 --with-zlib) \
 		$(usex nse --with-zlib) \
-		$(usex nse --with-liblua=$(usex system-lua /usr included '' '') --without-liblua) \
+		$(usex nse --with-liblua=$(usex system-lua yes included '' '') --without-liblua) \
 		--cache-file="${S}"/config.cache \
 		--with-libdnet=included \
 		--with-pcre=/usr
