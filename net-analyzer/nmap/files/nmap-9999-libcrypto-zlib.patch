@@ -1,0 +1,52 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -381,7 +381,7 @@ if test "$use_openssl" = "yes" -a -z "$specialssldir"; then
+       AC_MSG_ERROR([OpenSSL was explicitly requested but libcrypto was not found. Try the --with-openssl=DIR argument to give the location of OpenSSL or run configure with --without-openssl.])
+     fi
+     AC_MSG_WARN([Failed to find libcrypto so OpenSSL will not be used. If it is installed you can try the --with-openssl=DIR argument])
+-   ])
++   ], [ -lz ] )
+  fi
+ 
+  if test "$use_openssl" = "yes"; then
+@@ -392,13 +392,14 @@ if test "$use_openssl" = "yes" -a -z "$specialssldir"; then
+       AC_MSG_ERROR([OpenSSL was explicitly requested but libssl was not found. Try the --with-openssl=DIR argument to give the location of OpenSSL or run configure with --without-openssl.])
+     fi
+     AC_MSG_WARN([Failed to find libssl so OpenSSL will not be used. If it is installed you can try the --with-openssl=DIR argument]) ],
+-    [ -lcrypto ])
++    [ -lcrypto -lz ])
+  fi
+ 
+  if test "$use_openssl" = "yes"; then
+    AC_CHECK_LIB(crypto, EVP_PKEY_get1_EC_KEY,
+     [AC_DEFINE(HAVE_OPENSSL_EC, 1, [Have EVP_PKEY_get1_EC_KEY])],
+-    [AC_MSG_WARN([Disabling support for EC crypto])])
++    [AC_MSG_WARN([Disabling support for EC crypto])],
++    [ -lz ])
+   fi
+ fi
+
+diff --git a/nping/configure.ac b/nping/configure.ac
+index 00c3ec470..209e7c8bf 100644
+--- a/nping/configure.ac
++++ b/nping/configure.ac
+@@ -149,6 +146,7 @@ if test "$use_openssl" = "yes" -a -z "$specialssldir"; then
+ 
+ # use_openssl="yes" given explicitly in next 2 rules to avoid adding lib to $LIBS
+  if test "$use_openssl" = "yes"; then
++   AC_CHECK_LIB(z, deflate)
+    AC_CHECK_LIB(crypto, BIO_int_ctrl,
+     [ use_openssl="yes"],
+     [ use_openssl="no"
+diff --git a/ncat/configure.ac b/ncat/configure.ac
+index 9a87daf19..f9d6247cc 100644
+--- a/ncat/configure.ac
++++ b/ncat/configure.ac
+@@ -86,6 +86,7 @@ if test "$use_openssl" = "yes" -a -z "$specialssldir" ; then
+ 	fi
+ 
+ 	if test "$use_openssl" = "yes"; then
++	 AC_CHECK_LIB(z, inflate)
+ 	 AC_CHECK_LIB(crypto, BIO_int_ctrl,
+ 	   [ use_openssl="yes"],
+ 	   [ use_openssl="no"
