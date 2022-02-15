@@ -5,17 +5,16 @@ EAPI=7
 CMAKE_ECLASS=cmake
 inherit cmake-multilib
 
-EGIT_COMMIT=6c7769dcc422250d14af1b06fce378b6ee009440
 DESCRIPTION="Library implementing the SSH2 protocol"
 HOMEPAGE="https://www.libssh2.org"
-SRC_URI="https://github.com/libssh2/libssh2/archive/${EGIT_COMMIT}.tar.gz -> ${P}.tar.gz"
-S=${WORKDIR}/${PN}-${EGIT_COMMIT}
+SRC_URI="https://www.libssh2.org/download/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-solaris"
 IUSE="gcrypt mbedtls static-libs zlib"
 REQUIRED_USE="?? ( gcrypt mbedtls )"
+# Tests try to set containers up using docker (and fail for some reason).
 RESTRICT="test"
 
 RDEPEND="
