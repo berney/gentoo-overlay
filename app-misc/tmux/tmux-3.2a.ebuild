@@ -24,14 +24,14 @@ IUSE="debug selinux static utempter vim-syntax"
 
 DEPEND="
 	static? (
-		dev-libs/libevent:0=
-		sys-libs/ncurses:0=
-		utempter? ( sys-libs/libutempter )
-	)
-	!static? (
 		dev-libs/libevent:0=[static-libs(+)]
 		sys-libs/ncurses:0=[static-libs(+)]
 		utempter? ( sys-libs/libutempter[static-libs(+)] )
+	)
+	!static? (
+		dev-libs/libevent:0=
+		sys-libs/ncurses:0=
+		utempter? ( sys-libs/libutempter )
 	)
 "
 
