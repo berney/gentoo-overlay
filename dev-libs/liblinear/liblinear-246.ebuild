@@ -1,36 +1,38 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit toolchain-funcs
+inherit multilib toolchain-funcs
+
+MY_PV="${PV:0:1}.${PV:1}"
+MY_P="${PN}-${MY_PV}"
 
 DESCRIPTION="A Library for Large Linear Classification"
 HOMEPAGE="https://www.csie.ntu.edu.tw/~cjlin/liblinear/ https://github.com/cjlin1/liblinear"
-SRC_URI="https://github.com/cjlin1/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://www.csie.ntu.edu.tw/~cjlin/liblinear/${MY_P}.tar.gz"
+S="${WORKDIR}"/${MY_P}
 
 LICENSE="BSD"
-SLOT="0/4"
+SLOT="0/5"
 IUSE="static-libs"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86 ~x64-macos"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-macos"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-240-r1-static.patch
+	"${FILESDIR}"/${PN}-246-static.patch
 )
 
 src_prepare() {
 	default
 
 	sed -i \
-		-e '/^AR/s|=|?=|g' \
-		-e '/^RANLIB/s|=|?=|g' \
 		-e '/^CFLAGS/d;/^CXXFLAGS/d' \
 		blas/Makefile || die
 	sed -i \
 		-e 's|make|$(MAKE)|g' \
 		-e '/$(LIBS)/s|$(CFLAGS)|& $(LDFLAGS)|g' \
 		-e '/^CFLAGS/d;/^CXXFLAGS/d' \
-		-e 's|$${SHARED_LIB_FLAG}|& $(LDFLAGS)|g' \
+		-e 's|$(SHARED_LIB_FLAG)|& $(LDFLAGS)|g' \
 		Makefile || die
 
 	# fix install_name on Darwin
@@ -46,15 +48,15 @@ src_compile() {
 		CXX="$(tc-getCXX)" \
 		CFLAGS="${CFLAGS} -fPIC" \
 		CXXFLAGS="${CXXFLAGS} -fPIC" \
-		AR="$(tc-getAR) rcv" \
+		AR="$(tc-getAR)" \
 		RANLIB="$(tc-getRANLIB)" \
 		lib all
 }
 
 src_install() {
 	use static-libs && dolib.a ${PN}.a
-	dolib.so ${PN}$(get_libname 4)
-	dosym ${PN}$(get_libname 4) /usr/$(get_libdir)/${PN}$(get_libname)
+	dolib.so ${PN}$(get_libname ${SLOT#*/})
+	dosym ${PN}$(get_libname ${SLOT#*/}) /usr/$(get_libdir)/${PN}$(get_libname)
 
 	newbin predict ${PN}-predict
 	newbin train ${PN}-train
