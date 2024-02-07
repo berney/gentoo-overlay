@@ -13,7 +13,7 @@ SRC_URI="https://dev.gentoo.org/~soap/distfiles/${P}.tar.xz"
 LICENSE="MIT"
 SLOT="5.4"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x64-solaris"
-IUSE="+deprecated readline"
+IUSE="+deprecated readline static-libs"
 
 DEPEND="
 	>=app-eselect/eselect-lua-3
@@ -40,7 +40,8 @@ src_prepare() {
 
 src_configure() {
 	use deprecated && append-cppflags -DLUA_COMPAT_5_3
-	econf $(use_with readline)
+	econf $(use_with readline) \
+		$(use_enable static-libs static)
 }
 
 src_install() {
