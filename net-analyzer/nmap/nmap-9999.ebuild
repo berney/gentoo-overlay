@@ -40,7 +40,6 @@ REQUIRED_USE="
 "
 
 RDEPEND="
-	dev-libs/liblinear:=
 	symlink? (
 		ncat? (
 			!net-analyzer/netcat
@@ -48,6 +47,7 @@ RDEPEND="
 		)
 	)
 	static? (
+		dev-libs/liblinear:=[static-libs(+)]
 		dev-libs/libpcre2[static-libs(+)]
 		net-libs/libpcap[static-libs(+)]
 		sys-libs/zlib[static-libs(+)]
@@ -62,6 +62,7 @@ RDEPEND="
 		ssl? ( dev-libs/openssl:=[static-libs(+)] )
 	)
 	!static? (
+		dev-libs/liblinear:=
 		dev-libs/libpcre
 		net-libs/libpcap
 		libssh2? (
