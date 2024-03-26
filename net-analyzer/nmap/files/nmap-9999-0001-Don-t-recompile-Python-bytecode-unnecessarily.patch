@@ -1,0 +1,22 @@
+diff --git a/Makefile.in b/Makefile.in
+index dee2729d2..7c84cbfd2 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -365,7 +365,7 @@ build-zenmap: $(ZENMAPDIR)/pyproject.toml $(ZENMAPDIR)/zenmapCore/Version.py
+ 
+ install-zenmap: $(ZENMAPDIR)/pyproject.toml
+ 	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(mandir)/man1
+-	$(PYTHON) -m pip install $(ZENMAPDIR) $(if $(DESTDIR),--root "$(DESTDIR)")
++	$(PYTHON) -m pip install $(ZENMAPDIR) $(if $(DESTDIR),--root "$(DESTDIR)") --no-compile
+ 	$(INSTALL) -c -m 644 docs/zenmap.1 $(DESTDIR)$(mandir)/man1/
+ # Create a symlink from nmapfe to zenmap if nmapfe doesn't exist or is
+ # already a link.
+@@ -382,7 +382,7 @@ build-nping: $(NPINGDIR)/Makefile build-nbase build-nsock build-netutil $(NPINGD
+ 	@cd $(NPINGDIR) && $(MAKE)
+ 
+ install-ndiff:
+-	cd $(NDIFFDIR) && $(PYTHON) setup.py install --prefix "$(prefix)" $(if $(DESTDIR),--root "$(DESTDIR)")
++	cd $(NDIFFDIR) && $(PYTHON) setup.py install --prefix "$(prefix)" $(if $(DESTDIR),--root "$(DESTDIR)") --no-compile
+ 
+ NSE_FILES = scripts/script.db scripts/*.nse
+ NSE_LIB_LUA_FILES = nselib/*.lua nselib/*.luadoc

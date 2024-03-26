@@ -86,7 +86,13 @@ if [[ ${PV} != *9999* ]] ; then
 fi
 
 PATCHES=(
-	"${WORKDIR}"/${PN}-7.95-patches
+	"${WORKDIR}"/${PN}-7.95-patches/0003-Fix-AR-usage.patch
+	"${WORKDIR}"/${PN}-7.95-patches/0004-Respect-CXXFLAGS-in-all-Makefile-rules.patch
+	"${WORKDIR}"/${PN}-7.95-patches/0005-Drop-AC_CONFIG_SUBDIRS-usage.patch
+	"${WORKDIR}"/${PN}-7.95-patches/0006-Drop-libnl-check-in-nping-configure.patch
+	"${WORKDIR}"/${PN}-7.95-patches/0007-Don-t-force-D_FORTIFY_SOURCE-2.patch
+	"${WORKDIR}"/${PN}-7.95-patches/0008-Fix-netutil-else-for-datalen.patch
+	"${FILESDIR}"/${PN}-9999-0001-Don-t-recompile-Python-bytecode-unnecessarily.patch
 	"${FILESDIR}"/${PN}-9999-liblinear.patch
 )
 
