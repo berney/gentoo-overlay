@@ -44,7 +44,7 @@ src_configure() {
 		--with-lib="/usr/$(get_libdir)/execline"
 		--with-lib="/usr/$(get_libdir)/skalibs"
 		--with-sysdeps="/usr/$(get_libdir)/skalibs"
-		--enable-shared
+		$(usex static --disable-shared --enable-shared)
 		$(use_enable static allstatic)
 		$(use_enable static static)
 		$(use_enable static static-libc)
