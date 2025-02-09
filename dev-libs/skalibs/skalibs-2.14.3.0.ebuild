@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -11,7 +11,8 @@ SRC_URI="https://www.skarnet.org/software/${PN}/${P}.tar.gz"
 
 LICENSE="ISC"
 SLOT="0/$(ver_cut 1-2)"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~mips ~ppc ~ppc64 ~riscv ~x86"
+KEYWORDS="~alpha amd64 ~arm ~arm64 ~mips ~ppc ~ppc64 ~riscv x86"
+IUSE="static-libs"
 
 HTML_DOCS=( doc/. )
 
@@ -33,10 +34,10 @@ src_configure() {
 		--sysdepdir="/usr/$(get_libdir)/${PN}"
 		--sysconfdir=/etc
 
-		--disable-static
+		$(usex static-libs --disable-shared --enable-shared)
+		$(use_enable static-libs static)
 		--enable-clock
 		--enable-ipv6
-		--enable-shared
 	)
 
 	econf "${myconf[@]}"

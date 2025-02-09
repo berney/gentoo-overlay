@@ -34,7 +34,7 @@ src_configure() {
 		--sysdepdir="/usr/$(get_libdir)/${PN}"
 		--sysconfdir=/etc
 
-		$(usex static --disable-shared --enable-shared)
+		$(usex static-libs --disable-shared --enable-shared)
 		$(use_enable static-libs static)
 		--enable-clock
 		--enable-ipv6
