@@ -41,7 +41,7 @@ src_configure() {
 		--with-dynlib="/$(get_libdir)"
 		--with-lib="/usr/$(get_libdir)/skalibs"
 		--with-sysdeps="/usr/$(get_libdir)/skalibs"
-		--enable-shared
+		$(usex static --disable-shared --enable-shared)
 		$(use_enable static allstatic)
 		$(use_enable static static)
 		$(use_enable static static-libc)
